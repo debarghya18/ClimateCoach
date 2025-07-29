@@ -1,0 +1,175 @@
+version: '3.8'
+
+services:
+  # Main ClimateCoach Application
+  climatecoach-app:
+    build: .
+    container_name: climatecoach-web
+    ports:
+      - "8501:8501"
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - METEOSTAT_API_KEY=${METEOSTAT_API_KEY}
+      - NASA_API_KEY=${NASA_API_KEY}
+      - DATABASE_URL=postgresql://climatecoach:${POSTGRES_PASSWORD}@postgres:5432/climatecoach_db
+      - REDIS_URL=redis://redis:6379/0
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_S3_BUCKET=${AWS_S3_BUCKET}
+      - PROMETHEUS_ENABLED=true
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+      - ./models:/app/models
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - climatecoach-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8501/_stcore/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: climatecoach-postgres
+    environment:
+      - POSTGRES_DB=climatecoach_db
+      - POSTGRES_USER=climatecoach
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./sql/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
+    networks:
+      - climatecoach-network
+    restart: unless-stopped
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: climatecoach-redis
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD}
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    networks:
+      - climatecoach-network
+    restart: unless-stopped
+
+  # Prometheus Monitoring
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: climatecoach-prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--web.enable-lifecycle'
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    ports:
+      - "9090:9090"
+    networks:
+      - climatecoach-network
+    restart: unless-stopped
+
+  # Grafana Dashboard
+  grafana:
+    image: grafana/grafana:latest
+    container_name: climatecoach-grafana
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD}
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards
+      - ./monitoring/grafana/datasources:/etc/grafana/provisioning/datasources
+    ports:
+      - "3000:3000"
+    networks:
+      - climatecoach-network
+    depends_on:
+      - prometheus
+    restart: unless-stopped
+
+  # FastAPI Backend
+  climatecoach-api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    container_name: climatecoach-api
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://climatecoach:${POSTGRES_PASSWORD}@postgres:5432/climatecoach_db
+      - REDIS_URL=redis://redis:6379/0
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - climatecoach-network
+    restart: unless-stopped
+
+  # Celery Worker for Background Tasks
+  celery-worker:
+    build: .
+    container_name: climatecoach-celery
+    command: celery -A src.services.celery_app worker --loglevel=info
+    environment:
+      - DATABASE_URL=postgresql://climatecoach:${POSTGRES_PASSWORD}@postgres:5432/climatecoach_db
+      - REDIS_URL=redis://redis:6379/0
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - METEOSTAT_API_KEY=${METEOSTAT_API_KEY}
+      - NASA_API_KEY=${NASA_API_KEY}
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - climatecoach-network
+    restart: unless-stopped
+
+  # NGINX Reverse Proxy
+  nginx:
+    image: nginx:alpine
+    container_name: climatecoach-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/ssl:/etc/nginx/ssl
+    depends_on:
+      - climatecoach-app
+      - climatecoach-api
+    networks:
+      - climatecoach-network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  redis_data:
+  prometheus_data:
+  grafana_data:
+
+networks:
+  climatecoach-network:
+    driver: bridge

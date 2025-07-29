@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Climate AI Platform - Intelligent Climate Analysis</title>
+    
+    <!-- Preconnect for performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+    
+    <!-- Leaflet for maps -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
+    <!-- AOS (Animate On Scroll) -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/static/css/styles.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/static/images/favicon.ico">
+    
+    <!-- Meta tags for SEO -->
+    <meta name="description" content="Advanced AI-powered climate analysis platform for risk assessment and adaptation strategies">
+    <meta name="keywords" content="climate change, AI analysis, risk assessment, sustainability, environmental data">
+    <meta name="author" content="Climate AI Platform">
+    
+    <!-- Open Graph meta tags -->
+    <meta property="og:title" content="Climate AI Platform">
+    <meta property="og:description" content="Intelligent climate analysis and adaptation strategies">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://climateai.com">
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div id="loading-screen" class="loading-screen">
+        <div class="loading-content">
+            <div class="climate-logo">
+                <i class="fas fa-globe-americas"></i>
+            </div>
+            <div class="loading-text">
+                <h2>Climate AI Platform</h2>
+                <p>Initializing intelligent climate analysis...</p>
+            </div>
+            <div class="loading-bar">
+                <div class="loading-progress"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Header -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <i class="fas fa-globe-americas brand-icon"></i>
+                <span class="brand-text">Climate AI</span>
+            </div>
+            
+            <div class="nav-menu" id="nav-menu">
+                <ul class="nav-list">
+                    <li class="nav-item">
+                        <a href="#dashboard" class="nav-link active">
+                            <i class="fas fa-chart-line"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#analysis" class="nav-link">
+                            <i class="fas fa-brain"></i>
+                            <span>AI Analysis</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#recommendations" class="nav-link">
+                            <i class="fas fa-lightbulb"></i>
+                            <span>Recommendations</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#data" class="nav-link">
+                            <i class="fas fa-database"></i>
+                            <span>Climate Data</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#alerts" class="nav-link">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <span>Alerts</span>
+                            <span class="notification-badge">3</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="nav-actions">
+                <button class="nav-search-btn" id="search-btn">
+                    <i class="fas fa-search"></i>
+                </button>
+                <button class="nav-notifications" id="notifications-btn">
+                    <i class="fas fa-bell"></i>
+                    <span class="notification-dot"></span>
+                </button>
+                <div class="user-profile" id="user-profile">
+                    <img src="/static/images/placeholder.svg" alt="User Avatar" class="user-avatar">
+                    <span class="user-name">John Doe</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+            </div>
+            
+            <div class="mobile-menu-toggle" id="mobile-toggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Search Overlay -->
+    <div class="search-overlay" id="search-overlay">
+        <div class="search-container">
+            <div class="search-input-group">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" placeholder="Search locations, analyses, or recommendations..." class="search-input" id="global-search">
+                <button class="search-close" id="search-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="search-suggestions" id="search-suggestions">
+                <div class="suggestion-category">
+                    <h4>Recent Searches</h4>
+                    <div class="suggestion-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>Miami, Florida Climate Risk</span>
+                    </div>
+                    <div class="suggestion-item">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Temperature Trends 2024</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Hero Section -->
+        <section class="hero-section" data-aos="fade-up">
+            <div class="hero-content">
+                <div class="hero-text">
+                    <h1 class="hero-title">
+                        Intelligent Climate Analysis
+                        <span class="gradient-text">Powered by AI</span>
+                    </h1>
+                    <p class="hero-description">
+                        Advanced artificial intelligence analyzes climate patterns, predicts risks, and generates 
+                        personalized adaptation strategies for your location and property.
+                    </p>
+                    <div class="hero-actions">
+                        <button class="btn btn-primary btn-large" id="start-analysis">
+                            <i class="fas fa-rocket"></i>
+                            Start Climate Analysis
+                        </button>
+                        <button class="btn btn-secondary btn-large" id="view-demo">
+                            <i class="fas fa-play"></i>
+                            View Demo
+                        </button>
+                    </div>
+                </div>
+                <div class="hero-visual">
+                    <div class="climate-globe">
+                        <div class="globe-core"></div>
+                        <div class="globe-atmosphere"></div>
+                        <div class="data-points">
+                            <div class="data-point" style="top: 20%; left: 30%;"></div>
+                            <div class="data-point" style="top: 40%; left: 60%;"></div>
+                            <div class="data-point" style="top: 70%; left: 25%;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Quick Stats -->
+        <section class="quick-stats" data-aos="fade-up" data-aos-delay="200">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-thermometer-half"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 class="stat-number" data-count="24.5">24.5°C</h3>
+                        <p class="stat-label">Current Temperature</p>
+                        <span class="stat-trend positive">
+                            <i class="fas fa-arrow-up"></i> 2.3°C above normal
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-eye"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 class="stat-number" data-count="98">98%</h3>
+                        <p class="stat-label">AI Confidence</p>
+                        <span class="stat-trend neutral">
+                            <i class="fas fa-check-circle"></i> High Accuracy
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 class="stat-number" data-count="7.2">7.2</h3>
+                        <p class="stat-label">Risk Score</p>
+                        <span class="stat-trend negative">
+                            <i class="fas fa-arrow-down"></i> Moderate Risk
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-lightbulb"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 class="stat-number" data-count="12">12</h3>
+                        <p class="stat-label">Active Recommendations</p>
+                        <span class="stat-trend positive">
+                            <i class="fas fa-plus"></i> 3 New Today
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Dashboard Grid -->
+        <section class="dashboard-grid" data-aos="fade-up" data-aos-delay="400">
+            <!-- Climate Map -->
+            <div class="dashboard-card map-card">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <i class="fas fa-map"></i>
+                        Climate Risk Map
+                    </h3>
+                    <div class="card-actions">
+                        <button class="btn-icon" title="Refresh">
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
+                        <button class="btn-icon" title="Fullscreen">
+                            <i class="fas fa-expand"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div id="climate-map" class="climate-map"></div>
+                    <div class="map-legend">
+                        <div class="legend-item">
+                            <span class="legend-color low-risk"></span>
+                            <span>Low Risk</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-color medium-risk"></span>
+                            <span>Medium Risk</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-color high-risk"></span>
+                            <span>High Risk</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Temperature Trends -->
+            <div class="dashboard-card chart-card">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <i class="fas fa-chart-line"></i>
+                        Temperature Trends
+                    </h3>
+                    <div class="card-actions">
+                        <select class="time-selector">
+                            <option value="7d">Last 7 Days</option>
+                            <option value="30d" selected>Last 30 Days</option>
+                            <option value="90d">Last 90 Days</option>
+                            <option value="1y">Last Year</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <canvas id="temperature-chart" class="chart-canvas"></canvas>
+                </div>
+            </div>
+
+            <!-- AI Insights -->
+            <div class="dashboard-card insights-card">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <i class="fas fa-brain"></i>
+                        AI Insights
+                    </h3>
+                    <div class="ai-status">
+                        <span class="status-indicator active"></span>
+                        <span>AI Active</span>
+                    </div>
+                </div>
+                <div class="card-content">
+                    <div class="insight-item">
+                        <div class="insight-icon">
+                            <i class="fas fa-exclamation-triangle text-warning"></i>
+                        </div>
+                        <div class="insight-content">
+                            <h4>Heat Wave Alert</h4>
+                            <p>AI predicts 3-day heat wave starting tomorrow. Consider implementing cooling strategies.</p>
+                            <span class="insight-confidence">Confidence: 94%</span>
+                        </div>
+                    </div>
+                    
+                    <div class="insight-item">
+                        <div class="insight-icon">
+                            <i class="fas fa-cloud-rain text-info"></i>
+                        </div>
+                        <div class="insight-content">
+                            <h4>Precipitation Increase</h4>
+                            <p>15% increase in rainfall expected this season. Review drainage systems.</p>
+                            <span class="insight-confidence">Confidence: 87%</span>
+                        </div>
+                    </div>
+                    
+                    <div class="insight-item">
+                        <div class="insight-icon">
+                            <i class="fas fa-leaf text-success"></i>
+                        </div>
+                        <div class="insight-content">
+                            <h4>Optimal Conditions</h4>
+                            <p>Next week shows ideal conditions for renewable energy generation.</p>
+                            <span class="insight-confidence">Confidence: 91%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Recommendations -->
+            <div class="dashboard-card recommendations-card">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        <i class="fas fa-lightbulb"></i>
+                        Recent Recommendations
+                    </h3>
+                    <button class="btn btn-sm btn-primary">View All</button>
+                </div>
+                <div class="card-content">
+                    <div class="recommendation-item">
+                        <div class="rec-priority high">HIGH</div>
+                        <div class="rec-content">
+                            <h4>Install Heat Pumps</h4>
+                            <p>Reduce cooling costs by 40% with efficient heat pump systems</p>
+                            <div class="rec-meta">
+                                <span class="rec-cost">$12,000 - $18,000</span>
+                                <span class="rec-timeline">6-8 weeks</span>
+                            </div>
+                        </div>
+                        <div class="rec-actions">
+                            <button class="btn-icon" title="More details">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="recommendation-item">
+                        <div class="rec-priority medium">MED</div>
+                        <div class="rec-content">
+                            <h4>Improve Insulation</h4>
+                            <p>Enhance building efficiency with upgraded insulation materials</p>
+                            <div class="rec-meta">
+                                <span class="rec-cost">$3,000 - $7,000</span>
+                                <span class="rec-timeline">2-3 weeks</span>
+                            </div>
+                        </div>
+                        <div class="rec-actions">
+                            <button class="btn-icon" title="More details">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="recommendation-item">
+                        <div class="rec-priority low">LOW</div>
+                        <div class="rec-content">
+                            <h4>Smart Thermostats</h4>
+                            <p>Optimize temperature control with AI-powered thermostats</p>
+                            <div class="rec-meta">
+                                <span class="rec-cost">$200 - $500</span>
+                                <span class="rec-timeline">1 day</span>
+                            </div>
+                        </div>
+                        <div class="rec-actions">
+                            <button class="btn-icon" title="More details">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Action Center -->
+        <section class="action-center" data-aos="fade-up" data-aos-delay="600">
+            <div class="action-header">
+                <h2>Quick Actions</h2>
+                <p>Start your climate analysis journey</p>
+            </div>
+            
+            <div class="action-grid">
+                <div class="action-card" data-action="location">
+                    <div class="action-icon">
+                        <i class="fas fa-map-marker-alt"></i>
+                    </div>
+                    <h3>Add Location</h3>
+                    <p>Register a new property for climate analysis</p>
+                    <button class="btn btn-outline">Get Started</button>
+                </div>
+                
+                <div class="action-card" data-action="analysis">
+                    <div class="action-icon">
+                        <i class="fas fa-chart-bar"></i>
+                    </div>
+                    <h3>Run Analysis</h3>
+                    <p>Generate comprehensive climate risk assessment</p>
+                    <button class="btn btn-outline">Analyze Now</button>
+                </div>
+                
+                <div class="action-card" data-action="report">
+                    <div class="action-icon">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <h3>Generate Report</h3>
+                    <p>Create detailed climate adaptation report</p>
+                    <button class="btn btn-outline">Create Report</button>
+                </div>
+                
+                <div class="action-card" data-action="emergency">
+                    <div class="action-icon">
+                        <i class="fas fa-exclamation-circle"></i>
+                    </div>
+                    <h3>Emergency Plan</h3>
+                    <p>Develop emergency response strategies</p>
+                    <button class="btn btn-outline">Plan Now</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modals -->
+    <div class="modal-overlay" id="location-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Add New Location</h3>
+                <button class="modal-close" id="close-location-modal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-content">
+                <form class="location-form">
+                    <div class="form-group">
+                        <label for="location-name">Location Name</label>
+                        <input type="text" id="location-name" placeholder="e.g., Miami Office Building">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="location-address">Address</label>
+                        <input type="text" id="location-address" placeholder="Enter full address">
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="latitude">Latitude</label>
+                            <input type="number" id="latitude" step="any" placeholder="25.7617">
+                        </div>
+                        <div class="form-group">
+                            <label for="longitude">Longitude</label>
+                            <input type="number" id="longitude" step="any" placeholder="-80.1918">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="property-type">Property Type</label>
+                        <select id="property-type">
+                            <option value="">Select property type</option>
+                            <option value="residential">Residential</option>
+                            <option value="commercial">Commercial</option>
+                            <option value="industrial">Industrial</option>
+                            <option value="agricultural">Agricultural</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" id="cancel-location">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Add Location</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <!-- Scripts -->
+    <script src="/static/js/scripts.js"></script>
+    <script>
+        // Initialize AOS
+        AOS.init({
+            duration: 800,
+            easing: 'ease-in-out',
+            once: true,
+            offset: 100
+        });
+
+        // Remove loading screen after page loads
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                document.getElementById('loading-screen').style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById('loading-screen').style.display = 'none';
+                }, 500);
+            }, 1500);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,56 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+rule_files:
+  - "climate_alerts.yml"
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: []
+
+scrape_configs:
+  # Prometheus itself
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # ClimateCoach Application
+  - job_name: 'climatecoach-app'
+    static_configs:
+      - targets: ['climatecoach-app:8501']
+    metrics_path: '/metrics'
+    scrape_interval: 10s
+
+  # FastAPI Backend
+  - job_name: 'climatecoach-api'
+    static_configs:
+      - targets: ['climatecoach-api:8000']
+    metrics_path: '/metrics'
+    scrape_interval: 10s
+
+  # PostgreSQL Database
+  - job_name: 'postgres'
+    static_configs:
+      - targets: ['postgres:5432']
+    scrape_interval: 30s
+
+  # Redis Cache
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['redis:6379']
+    scrape_interval: 30s
+
+  # Node Exporter (for system metrics)
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets: ['node-exporter:9100']
+    scrape_interval: 15s
+
+  # Custom Climate Metrics
+  - job_name: 'climate-metrics'
+    static_configs:
+      - targets: ['climatecoach-app:8501']
+    metrics_path: '/climate-metrics'
+    scrape_interval: 60s
